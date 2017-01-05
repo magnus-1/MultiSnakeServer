@@ -40,6 +40,11 @@ io.on('connection', function (socket) {
 
 	});
 
+	socket.on('SNAKE_POSITION',function (snakeData) {
+        var snakePos = JSON.stringify(snakeData)
+        console.log('SNAKE_POSITION = ' + snakePos);
+    });
+
 
 	// socket.on('PLAY', function (data){
 	// 	currentUser = {
