@@ -22,7 +22,11 @@ io.on('connection', function (socket) {
 
 	});
 
-	socket.on('PICKED_UP_FOOD', function (){
+	socket.on('PICKED_UP_FOOD', function (data){
+
+		var playerId = data.playerId;
+		var playerScore = data.playerScore;
+
 
 		console.log('User picked up food ');
 		socket.emit('PLAYER_SCORED',{
