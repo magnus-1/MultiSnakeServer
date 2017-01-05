@@ -47,6 +47,7 @@ io.on('connection', function (socket) {
 	socket.on('SNAKE_POSITION',function (snakeData) {
         var snakePos = JSON.stringify(snakeData)
         console.log('SNAKE_POSITION = ' + snakePos);
+        socket.emit('SNAKE_POSITION_UPDATE',snakeData);
     });
 
 
