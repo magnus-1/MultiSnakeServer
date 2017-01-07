@@ -26,11 +26,14 @@ io.on('connection', function (socket) {
 
     socket.on('PICKED_UP_FOOD', function (data) {
 
-        var playerId = data.playerId;
-        var username = data.username;
+        var playerId = data.playerid;
+        var playername = data.playername;
         var score = data.score;
-        console.log('User picked up food, username: '+ username + 'score: ' + score);
+        console.log('User picked up food, username: '+ playername + 'score: ' + score);
+        var strData = JSON.stringify(data);
+        console.log('User picked up food' + strData);
         socket.broadcast.emit('PLAYER_SCORED', data);
+        socket.broadcast.emit('SPAWN_FOOD',data);
 
     });
 
