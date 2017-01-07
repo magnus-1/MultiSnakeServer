@@ -10,7 +10,8 @@ var serverPort = 5000;
 app.set('port', process.env.PORT || serverPort);
 
 // var clients			= [];
-
+var players = [];
+var lobby = [];
 io.on('connection', function (socket) {
 
     var currentUser;
@@ -34,6 +35,17 @@ io.on('connection', function (socket) {
             msg: "active player scored"
         });
 
+    });
+
+    socket.on('PLAYER_READY', function (data) {
+
+        var playerId = data.playerId;
+        var playerScore = data.playerScore;
+
+        console.log('User ' + +' requested game over list');
+
+        socket.emit('PLAYER_BEGIN_GAME',snakeData);
+        socket.broadcast.emit('NEWPLAYER_JOINED',snakeData);
     });
 
     socket.on('GAME_OVER', function (data) {
