@@ -84,7 +84,7 @@ io.on('connection', function (socket) {
     // });
 
     socket.on('disconnect', function () {
-        console.log("User disconnected");
+        console.log("User disconnected, och auto deploy works");
 
         // socket.broadcast.emit('USER_DISCONNECTED',currentUser);
         // for (var i = 0; i < clients.length; i++) {
