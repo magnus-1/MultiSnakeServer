@@ -19,6 +19,7 @@ io.on('connection', function (socket) {
         var snakePos = JSON.stringify(snakeData)
 		console.log('Users Connected ' + snakePos);
 		socket.emit('WELCOME_MESSAGE',snakeData);
+        socket.broadcast.emit('NEWPLAYER_JOINED',snakeData);
 
     });
 
@@ -66,7 +67,8 @@ io.on('connection', function (socket) {
     socket.on('SNAKE_POSITION', function (snakeData) {
         var snakePos = JSON.stringify(snakeData)
         console.log('SNAKE_POSITION = ' + snakePos);
-        socket.emit('SNAKE_POSITION_UPDATE',snakeData);
+        // socket.emit('SNAKE_POSITION_UPDATE',snakeData);
+        socket.broadcast.emit('SNAKE_POSITION_UPDATE',snakeData);
     });
 
 
