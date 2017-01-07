@@ -15,11 +15,11 @@ io.on('connection', function (socket) {
 
     var currentUser;
 
-	socket.on('HELLO_SERVER', function (snakeData){
+    socket.on('HELLO_SERVER', function (snakeData) {
         var snakePos = JSON.stringify(snakeData)
-		console.log('Users Connected ' + snakePos);
-		socket.emit('WELCOME_MESSAGE',snakeData);
-        socket.broadcast.emit('NEWPLAYER_JOINED',snakeData);
+        console.log('Users Connected ' + snakePos);
+        socket.emit('WELCOME_MESSAGE', snakeData);
+        socket.broadcast.emit('NEWPLAYER_JOINED', snakeData);
 
     });
 
@@ -44,22 +44,67 @@ io.on('connection', function (socket) {
         console.log('User requested game over list');
 
         dbRequestHandler.insertHighScore(playerId, playerScore, function (result) {
-            if (result.success){
+            if (result.success) {
                 console.log('HighScore inserted');
             }
         });
 
     });
 
+    socket.on('LOGIN', function (indata) {
+        var data = JSON.parse(indata.utf8Data)
+        var username = data.username;
+        var password = data.password;
+
+        dbRequestHandler.authenticateUser(username, password, function (result) {
+            if (result.success){
+                console.log('Login successful, user: ' + username + ': pw: '+password);
+                socket.emit('LOGIN_SUCCESS');
+            } else {
+                console.log('Login failed, user: ' + username + ': pw: '+password);
+                socket.emit('LOGIN_FAILED');
+            }
+        })
+    });
+
+    socket.on('REGISTER', function (indata) {
+        var data = JSON.parse(indata.utf8Data)
+        var username = data.username;
+        var password = data.password;
+
+        dbRequestHandler.registerUser(username, password, function (result) {
+            if (result.success){
+                console.log('Register successful, user: ' + username + ': pw: '+password);
+                socket.emit('REGISTER_SUCCESS');
+            } else {
+                console.log('Register failed, user: ' + username + ': pw: '+password);
+                socket.emit('REGISTER_FAILED');
+            }
+        });
+    });
+
+    socket.on('POST_HIGHSCORE', function (indata) {
+        var data = JSON.parse(indata.utf8Data)
+        var username = data.username;
+        var score = data.score;
+
+        dbRequestHandler.insertHighScore(username, score, function (result) {
+            if (result.success){
+                console.log('Highscore saved successful');
+            } else {
+                console.log('Highscore saved failed');
+            }
+        });
+    });
+
+
+
     socket.on('GET_HIGHSCORE_LIST', function () {
 
         console.log('User requested highscore list');
 
         dbRequestHandler.getHighScoreList(function (highscores) {
-            socket.emit('HIGHSCORE_LIST', {
-                // send big json with top 100 player scores
-                msg: JSON.stringify(highscores)
-            });
+            socket.emit('HIGHSCORE_LIST', highscores);
         });
 
     });
@@ -68,7 +113,7 @@ io.on('connection', function (socket) {
         var snakePos = JSON.stringify(snakeData)
         console.log('SNAKE_POSITION = ' + snakePos);
         // socket.emit('SNAKE_POSITION_UPDATE',snakeData);
-        socket.broadcast.emit('SNAKE_POSITION_UPDATE',snakeData);
+        socket.broadcast.emit('SNAKE_POSITION_UPDATE', snakeData);
     });
 
 
