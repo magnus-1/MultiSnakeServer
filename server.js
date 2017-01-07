@@ -25,14 +25,11 @@ io.on('connection', function (socket) {
 
     socket.on('PICKED_UP_FOOD', function (data) {
 
-        var playerId = data.playerId;
-        var playerScore = data.playerScore;
+        var username = data.username;
+        var score = data.score;
 
-
-        console.log('User picked up food ');
-        socket.emit('PLAYER_SCORED', {
-            msg: "active player scored"
-        });
+        console.log('User picked up food, username: '+ username + 'score: ' + score);
+        socket.broadcast.emit('PLAYER_SCORED', data);
 
     });
 
