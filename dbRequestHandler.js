@@ -9,7 +9,7 @@ var connection = mysql.createConnection({
     host: "localhost",
     user: "serverutv",
     password: "!Qaz2wsx",
-    database: "communityDB"
+    database: "snakeDb"
 });
 
 connection.connect(function (error) {
@@ -23,6 +23,59 @@ connection.connect(function (error) {
 
 
 module.exports = {
+
+    getHighScoreList: function (callback) {
+        var query = "SELECT * FROM CommunityDB.Group limit 100";
+        var highscores = [];
+
+        connection.query(query, function (error, rows, fields) {
+            if (!!error) {
+                console.log("Error in query, %j", error.message);
+
+            } else {
+
+                for (var i = rows.length - 1; i >= 0; i--) {
+
+                    var rPlayerId = rows[i].playerId;
+                    var rPlayerScore= rows[i].playerScore;
+
+                    var score = {playerId: rPlayerId, playerScore: rPlayerScore};
+
+                    highscores.push(score);
+                }
+                ;
+                callback(highscores);
+            }
+
+        });
+
+    },
+
+    insertHighScore: function (playerId,playerScore, callback) {
+
+        var query = "INSERT INTO Message (playerId, playerScore) VALUES (" + playerId + "," + playerScore + "')";
+
+        connection.query(query, function (error, rows, fields) {
+            if (!!error) {
+                console.log("Error in query, %j", error.message);
+
+            } else {
+                callback({success: true});
+            }
+
+        });
+
+    },
+
+
+
+
+
+
+
+
+
+
 
     getGroups: function (id, callback) {
         var groups = []
