@@ -6,15 +6,15 @@ var mysql = require("mysql");
 
 var connection = mysql.createConnection({
 
-    host: "localhost",
+    host: "ireland-snakedb.c9tyflpct36x.eu-west-1.rds.amazonaws.com",
     user: "serverutv",
     password: "!Qaz2wsx",
-    database: "snakeDb"
+    database: "snakevrDb"
 });
 
 connection.connect(function (error) {
     if (!!error) {
-        console.log("Error when connecting to DB");
+        console.log("Error when connecting to DB, "+ error);
     } else {
         console.log("Connected to DB");
     }
