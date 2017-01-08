@@ -63,6 +63,17 @@ io.on('connection', function (socket) {
 
     });
 
+    socket.on('PLAYER_DIED', function (snakeData) {
+
+        var playerId = snakeData.playerid;
+        var playername = snakeData.playername;
+
+        console.log('User id:  '+ playerId+ ' name: ' + playername +' PLAYER_READY');
+
+        socket.emit('RESPAWN_PLAYER',snakeData);
+
+    });
+
     socket.on('LOGIN', function (indata) {
         var data = JSON.parse(indata.utf8Data)
         var username = data.username;
