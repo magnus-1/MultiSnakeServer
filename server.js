@@ -3,34 +3,49 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var shortId = require('shortid');
-var dbRequestHandler = require('./dbRequestHandler');
+//var dbRequestHandler = require('./dbRequestHandler');
 
 
 var serverPort = 5000;
 app.set('port', process.env.PORT || serverPort);
 
 // var clients			= [];
-
+var players = [];
+var lobby = [];
 io.on('connection', function (socket) {
 
     var currentUser;
 
     socket.on('HELLO_SERVER', function (snakeData) {
         var snakePos = JSON.stringify(snakeData)
-        console.log('Users Connected ' + snakePos);
-        socket.emit('WELCOME_MESSAGE', snakeData);
-        socket.broadcast.emit('NEWPLAYER_JOINED', snakeData);
+		console.log('Users Connected ' + snakePos);
+		socket.emit('WELCOME_MESSAGE',snakeData);
+        //socket.broadcast.emit('NEWPLAYER_JOINED',snakeData);
 
     });
 
     socket.on('PICKED_UP_FOOD', function (data) {
 
-        var username = data.username;
+        var playerId = data.playerid;
+        var playername = data.playername;
         var score = data.score;
-
-        console.log('User picked up food, username: '+ username + 'score: ' + score);
+        console.log('User picked up food, username: '+ playername + 'score: ' + score);
+        var strData = JSON.stringify(data);
+        console.log('User picked up food' + strData);
         socket.broadcast.emit('PLAYER_SCORED', data);
+        socket.broadcast.emit('SPAWN_FOOD',data);
 
+    });
+
+    socket.on('PLAYER_READY', function (snakeData) {
+
+        var playerId = snakeData.playerid;
+        var playername = snakeData.playername;
+
+        console.log('User id:  '+ playerId+ ' name: ' + playername +' PLAYER_READY');
+
+        socket.emit('PLAYER_BEGIN_GAME',snakeData);
+        socket.broadcast.emit('NEWPLAYER_JOINED',snakeData);
     });
 
     socket.on('GAME_OVER', function (data) {
@@ -108,7 +123,7 @@ io.on('connection', function (socket) {
 
     socket.on('SNAKE_POSITION', function (snakeData) {
         var snakePos = JSON.stringify(snakeData)
-        console.log('SNAKE_POSITION = ' + snakePos);
+        //console.log('SNAKE_POSITION = ' + snakePos);
         // socket.emit('SNAKE_POSITION_UPDATE',snakeData);
         socket.broadcast.emit('SNAKE_POSITION_UPDATE', snakeData);
     });
