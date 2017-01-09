@@ -107,8 +107,8 @@ io.on('connection', function (socket) {
     });
 
     socket.on('POST_HIGHSCORE', function (indata) {
-        var data = JSON.parse(indata.utf8Data)
-        var username = data.username;
+
+        var username = data.playername;
         var score = data.score;
 
         dbRequestHandler.insertHighScore(username, score, function (result) {

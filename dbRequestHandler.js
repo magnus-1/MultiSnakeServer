@@ -77,7 +77,10 @@ module.exports = {
                 callback({success: false});
             } else {
                 if (rows.length > 0) {
-                    callback({success: true});
+                    var rId = rows[0].id;
+                    var rUsername = rows[0].username;
+
+                    callback({success: true, playerid: rId, username: rUsername});
                 } else {
                     callback({success: false});
                 }
