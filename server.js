@@ -108,8 +108,8 @@ io.on('connection', function (socket) {
 
     socket.on('POST_HIGHSCORE', function (indata) {
 
-        var username = data.playername;
-        var score = data.score;
+        var username = indata.playername;
+        var score = indata.score;
 
         dbRequestHandler.insertHighScore(username, score, function (result) {
             if (result.success){
