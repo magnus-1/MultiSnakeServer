@@ -25,8 +25,9 @@ connection.connect(function (error) {
 module.exports = {
 
     getHighScoreList: function (callback) {
-        var query = "SELECT * FROM Highscore ORDER BY score DESC limit 10";
-        var highscores = "High Scores:\n";
+        var query = "SELECT * FROM Highscore ORDER BY score ASC limit 10";
+        var highscores = [];
+
 
         connection.query(query, function (error, rows, fields) {
             if (!!error) {
@@ -39,8 +40,11 @@ module.exports = {
                     var rUsername = rows[i].username;
                     var rScore = rows[i].score;
                     var rTimestamp = rows[i].timestamp;
-                    highscores += "" + (i+1) + ". " + rUsername + ". Score: " + rScore + " - " + rTimestamp.toString() + "\n";
+                    var score = {username: rUsername, score: rScore, timestamp: rTimestamp};
+
+                    highscores.push(score);
                 }
+
                 var result = {highscores: highscores};
 
                 callback(result);
