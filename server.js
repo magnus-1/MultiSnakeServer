@@ -130,6 +130,8 @@ io.on('connection', function (socket) {
         console.log('User requested highscore list');
 
         dbRequestHandler.getHighScoreList(function (highscores) {
+
+            console.log('highscore list: '+ JSON.stringify(highscores));
             socket.emit('HIGHSCORE_LIST', highscores);
         });
 
