@@ -110,6 +110,9 @@ io.on('connection', function (socket) {
 
         var username = indata.playername;
         var score = indata.score;
+        console.log('Goin to save high score for name: ' + username + ', whit score: ' + score);
+
+
 
         dbRequestHandler.insertHighScore(username, score, function (result) {
             if (result.success){

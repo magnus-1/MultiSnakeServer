@@ -25,7 +25,7 @@ connection.connect(function (error) {
 module.exports = {
 
     getHighScoreList: function (callback) {
-        var query = "SELECT * FROM Highscore limit 100";
+        var query = "SELECT * FROM Highscore ORDER BY score DESC limit 10";
         var highscores = [];
 
         connection.query(query, function (error, rows, fields) {
@@ -52,13 +52,14 @@ module.exports = {
 
     },
 
-    insertHighScore: function (username,score, callback) {
+    insertHighScore: function (playername,playerscore, callback) {
 
-        var query = "INSERT INTO Highscore (username, score) VALUES (" + username + "," + score + ")";
+        var timestamp  = new Date();
+        var query = "INSERT INTO Highscore (username, score) VALUES ('" + playername + "'," + playerscore + ")";
 
         connection.query(query, function (error, rows, fields) {
             if (!!error) {
-                console.log("Error in query, %j", error.message);
+                console.log("Error in insert highscore query, %j", error.message);
 
             } else {
                 callback({success: true});
@@ -68,8 +69,8 @@ module.exports = {
 
     },
 
-    authenticateUser: function (username,password, callback) {
-        var query = "SELECT username FROM User WHERE username =" + username + " and password =" + password;
+    authenticateUser: function (playernamename,playerpassword, callback) {
+        var query = "SELECT username FROM User WHERE username ='" + playername + "' and password ='" + playerpassword +"'";
 
         connection.query(query, function (error, rows, fields) {
             if (!!error) {
@@ -91,7 +92,7 @@ module.exports = {
 
     registerUser: function (username,password, callback) {
 
-        var query = "INSERT INTO User (username, password) VALUES (" + username + "," + password + "')";
+        var query = "INSERT INTO User (username, password) VALUES (" + username + "," + password + ")";
 
         connection.query(query, function (error, rows, fields) {
             if (!!error) {
