@@ -25,7 +25,7 @@ connection.connect(function (error) {
 module.exports = {
 
     getHighScoreList: function (callback) {
-        var query = "SELECT * FROM Highscore ORDER BY score ASC limit 10";
+        var query = "SELECT * FROM Highscore ORDER BY score DESC limit 10";
         var highscores = [];
 
 
