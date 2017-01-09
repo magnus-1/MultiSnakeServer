@@ -54,7 +54,7 @@ module.exports = {
 
     insertHighScore: function (username,score, callback) {
 
-        var query = "INSERT INTO Highscore (username, score) VALUES (" + username + "," + score + "')";
+        var query = "INSERT INTO Highscore (username, score) VALUES (" + username + "," + score + ")";
 
         connection.query(query, function (error, rows, fields) {
             if (!!error) {
