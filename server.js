@@ -127,7 +127,7 @@ io.on('connection', function (socket) {
 
     socket.on('GET_HIGHSCORE_LIST', function () {
 
-        console.log('User requested highscore list');
+        console.log('User requested highscore list hej');
 
         dbRequestHandler.getHighScoreList(function (highscores) {
 
