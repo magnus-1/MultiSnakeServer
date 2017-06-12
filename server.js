@@ -9,30 +9,43 @@ var dbRequestHandler = require('./dbRequestHandler');
 var serverPort = 5000;
 app.set('port', process.env.PORT || serverPort);
 
-// var clients			= [];
 
+var players = [];
+var lobby = [];
 io.on('connection', function (socket) {
 
-    var currentUser;
+    var currentUser = {};
 
-	socket.on('HELLO_SERVER', function (snakeData){
+    socket.on('HELLO_SERVER', function (snakeData) {
         var snakePos = JSON.stringify(snakeData)
 		console.log('Users Connected ' + snakePos);
 		socket.emit('WELCOME_MESSAGE',snakeData);
+        //socket.broadcast.emit('NEWPLAYER_JOINED',snakeData);
 
     });
 
     socket.on('PICKED_UP_FOOD', function (data) {
 
-        var playerId = data.playerId;
-        var playerScore = data.playerScore;
+        var playerId = data.playerid;
+        var playername = data.playername;
+        var score = data.score;
+        console.log('User picked up food, username: '+ playername + 'score: ' + score);
+        var strData = JSON.stringify(data);
+        console.log('User picked up food' + strData);
+        socket.broadcast.emit('PLAYER_SCORED', data);
+        socket.broadcast.emit('SPAWN_FOOD',data);
 
+    });
 
-        console.log('User picked up food ');
-        socket.emit('PLAYER_SCORED', {
-            msg: "active player scored"
-        });
+    socket.on('PLAYER_READY', function (snakeData) {
 
+        var playerId = snakeData.playerid;
+        var playername = snakeData.playername;
+
+        console.log('User id:  '+ playerId+ ' name: ' + playername +' PLAYER_READY');
+
+        socket.emit('PLAYER_BEGIN_GAME',snakeData);
+        socket.broadcast.emit('NEWPLAYER_JOINED',snakeData);
     });
 
     socket.on('GAME_OVER', function (data) {
@@ -43,62 +56,99 @@ io.on('connection', function (socket) {
         console.log('User requested game over list');
 
         dbRequestHandler.insertHighScore(playerId, playerScore, function (result) {
-            if (result.success){
+            if (result.success) {
                 console.log('HighScore inserted');
             }
         });
 
     });
 
+    socket.on('PLAYER_DIED', function (snakeData) {
+
+        var playerId = snakeData.playerid;
+        var playername = snakeData.playername;
+
+        console.log('User id:  '+ playerId+ ' name: ' + playername +' PLAYER_READY');
+
+        socket.emit('RESPAWN_PLAYER',snakeData);
+
+    });
+
+    socket.on('LOGIN', function (indata) {
+        var data = JSON.parse(indata.utf8Data)
+        var username = data.username;
+        var password = data.password;
+
+        dbRequestHandler.authenticateUser(username, password, function (result) {
+            if (result.success){
+                console.log('Login successful, user: ' + username + ': pw: '+password);
+                socket.emit('LOGIN_SUCCESS');
+            } else {
+                console.log('Login failed, user: ' + username + ': pw: '+password);
+                socket.emit('LOGIN_FAILED');
+            }
+        })
+    });
+
+    socket.on('REGISTER', function (indata) {
+        var data = JSON.parse(indata.utf8Data)
+        var username = data.username;
+        var password = data.password;
+
+        dbRequestHandler.registerUser(username, password, function (result) {
+            if (result.success){
+                console.log('Register successful, user: ' + username + ': pw: '+password);
+                socket.emit('REGISTER_SUCCESS');
+            } else {
+                console.log('Register failed, user: ' + username + ': pw: '+password);
+                socket.emit('REGISTER_FAILED');
+            }
+        });
+    });
+
+    socket.on('POST_HIGHSCORE', function (indata) {
+
+        var username = indata.playername;
+        var score = indata.score;
+        console.log('Goin to save high score for name: ' + username + ', whit score: ' + score);
+
+
+
+        dbRequestHandler.insertHighScore(username, score, function (result) {
+            if (result.success){
+                console.log('Highscore saved successful');
+            } else {
+                console.log('Highscore saved failed');
+            }
+        });
+    });
+
+
+
     socket.on('GET_HIGHSCORE_LIST', function () {
 
-        console.log('User requested highscore list');
+        console.log('User requested highscore list hej');
 
         dbRequestHandler.getHighScoreList(function (highscores) {
-            socket.emit('HIGHSCORE_LIST', {
-                // send big json with top 100 player scores
-                msg: JSON.stringify(highscores)
-            });
+
+            console.log('highscore list: '+ JSON.stringify(highscores));
+            socket.emit('HIGHSCORE_LIST', highscores);
         });
 
     });
 
     socket.on('SNAKE_POSITION', function (snakeData) {
         var snakePos = JSON.stringify(snakeData)
-        console.log('SNAKE_POSITION = ' + snakePos);
-        socket.emit('SNAKE_POSITION_UPDATE',snakeData);
+        //console.log('SNAKE_POSITION = ' + snakePos);
+        // socket.emit('SNAKE_POSITION_UPDATE',snakeData);
+        socket.broadcast.emit('SNAKE_POSITION_UPDATE', snakeData);
     });
 
-
-    // socket.on('PLAY', function (data){
-    // 	currentUser = {
-    // 		name:data.name,
-    // 		id:shortId.generate(),
-    // 		position:data.position
-    // 	}
-
-    // 	clients.push(currentUser);
-    // 	socket.emit('PLAY',currentUser );
-    // 	socket.broadcast.emit('USER_CONNECTED',currentUser);
-
-    // });
 
     socket.on('disconnect', function () {
         console.log("User disconnected, och auto deploy works");
 
-        // socket.broadcast.emit('USER_DISCONNECTED',currentUser);
-        // for (var i = 0; i < clients.length; i++) {
-        // 	if (clients[i].name === currentUser.name && clients[i].id === currentUser.id) {
-
-        // 		console.log("User "+clients[i].name+" id: "+clients[i].id+" has disconnected");
-        // 		clients.splice(i,1);
-
-        // 	};
-        // };
-
     });
-
-
 });
 
 
